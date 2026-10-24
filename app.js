@@ -794,6 +794,33 @@ function guideHTML() {
     ${dataGuideNotes()}</div>`;
 }
 
+// MARK: 홈 화면에 추가(설정 안)
+
+/// 크롬·엣지가 주는 설치 기회를 잡아 두었다가 설정의 '지금 설치' 로
+let installPrompt = null;
+addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  installPrompt = e;
+});
+
+function installHTML() {
+  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) return '<p class="small muted">지금 앱으로 열려 있습니다.</p>';
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const android = /Android/.test(ua);
+  const ways = [
+    ["ios", "아이폰·아이패드", "Safari 의 공유 단추(⬆︎) → <b>홈 화면에 추가</b> → <b>추가</b>"],
+    ["android", "안드로이드", "Chrome 오른쪽 위 ⋮ → <b>홈 화면에 추가</b>(또는 <b>앱 설치</b>)"],
+    ["desktop", "컴퓨터", "Chrome·Edge 는 주소창 오른쪽 설치 아이콘 또는 메뉴 → <b>앱 설치</b>, Mac Safari 는 파일 → <b>Dock 에 추가</b>"],
+  ];
+  const mine = ios ? "ios" : android ? "android" : "desktop";
+  const [, name, how] = ways.find((w) => w[0] === mine);
+  return `<p class="small">홈 화면(바탕화면)에 아이콘으로 두고 앱처럼 열 수 있습니다. 한 번 열면 인터넷 없이도 열립니다.</p>
+    <p class="small"><b>${name}</b>: ${how}</p>
+    ${installPrompt ? '<div class="row"><button type="button" class="small-btn primary" id="set-install">지금 설치</button></div>' : ""}
+    <p class="small muted">${ways.filter((w) => w[0] !== mine).map(([, n, h]) => `${n}: ${h}`).join("<br>")}</p>`;
+}
+
 /// '자료 넣는 법' 창(언제든)
 function openHelp() {
   const d = $("help");
@@ -853,6 +880,8 @@ function openSettings(focusAliases = false) {
       <div class="row"><button type="button" class="small-btn" data-pickfiles>파일 넣기…</button>
       <button type="button" class="small-btn" id="set-help">자료 넣기</button>
       <button type="button" class="small-btn danger" id="set-clear">자료 모두 지우기</button></div></section>
+    <section><h3>홈 화면에 추가</h3>
+      ${installHTML()}</section>
     <section><h3>이용 안내</h3>
       <p class="small caution">${CAUTION}</p>
       <p class="small muted">${CALCULATED}</p>
@@ -890,6 +919,13 @@ function openSettings(focusAliases = false) {
   };
   d.querySelector("[data-pickfiles]").onclick = () => { d.close(); $("file-input").click(); };
   d.querySelector("#set-help").onclick = () => { d.close(); openHelp(); };
+  const install = d.querySelector("#set-install");
+  if (install) install.onclick = async () => {
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+    openSettings();
+  };
   d.querySelector("#set-clear").onclick = async () => {
     if (!confirm("넣은 JCR·SCImago 자료를 이 브라우저에서 모두 지울까요? (설정·즐겨찾기는 남습니다)")) return;
     await store.clearFiles();

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Journal Metrics</title>
+  <meta name="description" content="JCR·SCImago 에서 받은 CSV 로 저널의 JIF·분위·순위·SJR 을 한 표로 봅니다. 자료는 이 브라우저 안에만 둡니다.">
+  <meta name="theme-color" content="#f6f6f8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1c1c1f" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Journal Metrics">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div id="app" class="app" data-pane="lists">
+    <aside class="sidebar">
+      <div class="side-head">
+        <span class="brand"><img src="icons/icon-32.png" alt="" width="18" height="18">Journal Metrics</span>
+        <button type="button" id="btn-settings-m" class="icon only-narrow" title="설정">⚙︎</button>
+      </div>
+      <div class="side-search only-narrow">
+        <input type="search" id="search-m" placeholder="저널 찾기 — 이름·줄임말·ISSN" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      </div>
+      <nav id="side-list" class="side-list"></nav>
+      <footer id="side-foot" class="side-foot"></footer>
+    </aside>
+
+    <main class="main">
+      <header class="toolbar">
+        <button type="button" id="btn-back" class="icon only-narrow back" title="목록">‹</button>
+        <div class="titles"><div id="title" class="title"></div><div id="subtitle" class="subtitle"></div></div>
+        <label class="search">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input type="search" id="search" placeholder="저널 이름·줄임말·ISSN — 대충 써도 됨 (⌘F)" autocomplete="off" spellcheck="false" enterkeyhint="search">
+        </label>
+        <div class="tools">
+          <button type="button" id="btn-nonjcr" class="toggle">SCImago 포함</button>
+          <button type="button" id="btn-esci" class="toggle">ESCI 포함</button>
+          <button type="button" id="btn-export" class="toggle" title="지금 표를 보이는 열·차례 그대로 내보내기(저널을 둘 이상 골랐으면 고른 것만)">내보내기 ▾</button>
+          <button type="button" id="btn-pick" class="toggle only-narrow">고르기</button>
+          <button type="button" id="btn-detail" class="icon only-wide" title="자세히 보기 열기/닫기">◨</button>
+          <button type="button" id="btn-settings" class="icon only-wide" title="설정">⚙︎</button>
+        </div>
+        <div id="sortbar" class="sortbar only-narrow"></div>
+      </header>
+      <div id="subbar" class="subbar" hidden></div>
+      <div class="table-wrap">
+        <div id="table"></div>
+        <div id="table-empty" class="table-empty" hidden></div>
+        <div id="guide" class="guide" hidden></div>
+        <button type="button" id="btn-compare" class="fab" hidden>비교</button>
+      </div>
+    </main>
+
+    <section id="inspector" class="inspector" aria-label="자세히"></section>
+  </div>
+
+  <div id="print" class="print"></div>
+  <div id="popover" class="popover" hidden></div>
+  <div id="menu" class="menu" hidden></div>
+  <div id="flash" class="flash" hidden></div>
+  <div id="drop-overlay" class="drop-overlay" hidden><div>CSV·zip·폴더를 놓으면 넣습니다</div></div>
+  <dialog id="settings"></dialog>
+  <dialog id="name-dialog"></dialog>
+  <input type="file" id="file-input" multiple accept=".csv,.zip,text/csv,application/zip" hidden>
+</body>
+</html>

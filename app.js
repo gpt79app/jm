@@ -1,4 +1,4 @@
-// Journal Metrics — JCR·SCImago 에서 받은 CSV 를 이 브라우저 안에서만 읽어 저널 순위를 한 표로 보여 준다.
+// JournalTier — JCR·SCImago 에서 받은 CSV 를 이 브라우저 안에서만 읽어 저널 순위를 한 표로 보여 준다.
 import { loadTables, link, importFile, importSummary } from "./core/loader.js";
 import { best, categoryLines, displayCategory, displayTitle, editions, inJCR, otherCategories, rankIn, rankText, shortNumber, topOf, topText } from "./core/model.js";
 import { reranked } from "./core/ranking.js";
@@ -12,7 +12,7 @@ import { compareHTML, detailHTML } from "./ui/panels.js";
 import { exportColumns, printHTML, xlsxFor } from "./ui/export.js";
 import { badge, download, esc, fmt3, hideMenu, narrow, showMenu, today } from "./ui/util.js";
 
-const APP = "Journal Metrics";
+const APP = "JournalTier";
 /// 계산 값·책임 안내(첫 화면·설정)
 const CALCULATED = "ESCI 제외 순위·상위 %·SJR 분류 순위는 이 앱이 계산한 참고용 값입니다. 공식 값은 JCR·SCImago 에서 확인하세요.";
 const AS_IS = "이 앱은 있는 그대로 제공되며, 값의 정확성이나 그 사용 결과에 책임지지 않습니다.";
@@ -777,7 +777,7 @@ function guideHTML() {
     <p class="caution">⚠︎ ${CAUTION}</p>
     <p class="small muted">${CALCULATED} ${AS_IS}</p>
     <button type="button" class="primary" data-pickfiles>파일 고르기…</button>
-    <p class="small faint">넣은 자료는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 방문 수만 셉니다(쿠키·개인 정보 없음).</p></div>`;
+    <p class="small faint">넣은 자료는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다.</p></div>`;
 }
 
 function renderInspector() {
@@ -822,7 +822,7 @@ function openSettings(focusAliases = false) {
       <button type="button" class="small-btn" id="set-aliases-save">별칭 저장</button></section>
     <section><h3>자료</h3>
       <p class="small">${lib?.jcrYear != null ? `JCR ${lib.jcrYear} · 분야 ${lib.jcrCategories.length}개(CSV ${jcrFiles}개)` : "JCR 없음"} · ${lib?.sjrYear != null ? `SCImago ${lib.sjrYear}(CSV ${sjrFiles}개)` : "SCImago 없음"}</p>
-      <p class="small muted">자료·설정·즐겨찾기는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 다른 기기·브라우저에선 다시 넣어야 합니다. 방문 수만 GoatCounter 로 셉니다(쿠키·개인 정보 없음).</p>
+      <p class="small muted">자료·설정·즐겨찾기는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 다른 기기·브라우저에선 다시 넣어야 합니다.</p>
       <div class="row"><button type="button" class="small-btn" data-pickfiles>파일 넣기…</button>
       <button type="button" class="small-btn danger" id="set-clear">자료 모두 지우기</button></div></section>
     <section><h3>이용 안내</h3>

@@ -150,6 +150,7 @@ button.primary { padding: 7px 16px; border-radius: 8px; border: 0; cursor: point
 .step { display: flex; gap: 10px; align-items: baseline; }
 .step-n { color: var(--accent); font-weight: 700; }
 .guide-box button.primary { align-self: flex-start; }
+.caution { margin: 0; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--orange) 45%, transparent); background: color-mix(in srgb, var(--orange) 8%, transparent); font-size: 12px; line-height: 1.5; }
 
 /* 표 */
 .vt { overflow: auto; outline: none; }

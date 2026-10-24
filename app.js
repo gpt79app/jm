@@ -13,6 +13,9 @@ import { exportColumns, printHTML, xlsxFor } from "./ui/export.js";
 import { badge, download, esc, fmt3, hideMenu, narrow, showMenu, today } from "./ui/util.js";
 
 const APP = "Journal Metrics";
+/// 계산 값·책임 안내(첫 화면·설정)
+const CALCULATED = "ESCI 제외 순위·상위 %·SJR 분류 순위는 이 앱이 계산한 참고용 값입니다. 공식 값은 JCR·SCImago 에서 확인하세요.";
+const AS_IS = "이 앱은 있는 그대로 제공되며, 값의 정확성이나 그 사용 결과에 책임지지 않습니다.";
 /// JCR 자료 이용 안내(첫 화면·설정)
 const CAUTION = "JCR 자료는 Clarivate 의 저작물입니다. 자기 기관의 구독으로 각자 받아 개인 연구용으로만 쓰고, 받은 CSV 를 남에게 나눠 주거나 인터넷에 올리지 마세요. 내보낸 표(Excel·PDF)에도 JCR 값이 들어 있으니 연구·업무용으로만 쓰세요.";
 const DEFAULTS = { includeESCI: true, includeNonJCR: false, dividers: "1, 5, 25, 50, 75", showDividers: true, hiddenCategories: [], columns: null };
@@ -772,6 +775,7 @@ function guideHTML() {
     ${step(2, "SCImago — 전체 목록 CSV 한 개", ["scimagojr.com → Journal Rankings → 거르지 말고 Download data", "파일 이름의 연도(scimagojr 2025.csv)는 그대로 두기"])}
     ${step(3, "받은 CSV 를 이 창에 끌어다 놓기", ["엑셀로 열었다 저장하지 말고 받은 그대로", "zip 이나 폴더째 놓아도 안의 CSV 를 찾아 넣음", "휴대폰·패드는 아래 단추로 파일 고르기"])}
     <p class="caution">⚠︎ ${CAUTION}</p>
+    <p class="small muted">${CALCULATED} ${AS_IS}</p>
     <button type="button" class="primary" data-pickfiles>파일 고르기…</button>
     <p class="small faint">넣은 자료는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 방문 수만 셉니다(쿠키·개인 정보 없음).</p></div>`;
 }
@@ -823,6 +827,8 @@ function openSettings(focusAliases = false) {
       <button type="button" class="small-btn danger" id="set-clear">자료 모두 지우기</button></div></section>
     <section><h3>이용 안내</h3>
       <p class="small caution">${CAUTION}</p>
+      <p class="small muted">${CALCULATED}</p>
+      <p class="small muted">${AS_IS}</p>
       <p class="small muted">SCImago 자료는 SCImago Journal &amp; Country Rank(scimagojr.com)의 공개 자료입니다. 쓸 때 출처를 밝혀 주세요.</p>
       <p class="small muted">Journal Citation Reports(JCR)는 Clarivate 의 상표입니다. 이 앱은 Clarivate·SCImago 와 관계없습니다.</p></section>
   </form>`;

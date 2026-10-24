@@ -149,13 +149,15 @@ button.primary { padding: 7px 16px; border-radius: 8px; border: 0; cursor: point
 .guide-box { max-width: 660px; text-align: left; display: flex; flex-direction: column; gap: 12px; }
 .guide-box .row, .help .row { display: flex; align-items: center; gap: 10px; }
 .step-body { min-width: 0; }
+.simple { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; line-height: 1.6; }
+.simple a { color: var(--accent); font-weight: 600; }
 .sub { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
 .sub li { line-height: 1.5; }
 .sub b { color: var(--text); font-weight: 600; }
 .sub a, .notes a { color: var(--accent); }
 .notes-title { margin: 6px 0 0; font-size: 13px; }
 .notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-dialog#help { width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 40px); overflow: auto; }
+dialog#help { width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 40px); overflow: auto; }
 .help { gap: 10px; }
 .help .step { margin-top: 2px; }
 .guide-box h2 { margin: 0; font-size: 20px; }

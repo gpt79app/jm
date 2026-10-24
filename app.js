@@ -663,8 +663,8 @@ function renderSidebar() {
   }
   // 자료가 없으면(처음) 목록에서도 넣는 법으로 — 좁은 화면은 첫 화면이 이 목록이다
   if (lib && !lib.journals.length && !S.loading) {
-    html += `<div class="side-empty"><b>아직 자료가 없습니다</b><p class="small muted">JCR·SCImago 에서 CSV 를 받아 넣으면 저널 순위가 보입니다.</p>
-      <button type="button" class="small-btn primary" data-help>자료 넣는 법</button><button type="button" class="small-btn" data-pickfiles>파일 고르기…</button></div>`;
+    html += `<div class="side-empty"><b>아직 자료가 없습니다</b><p class="small muted">JCR·SCImago 에서 CSV 를 받아 넣으면 됩니다.</p>
+      <button type="button" class="small-btn primary" data-help>넣는 법</button><button type="button" class="small-btn" data-pickfiles>파일 고르기…</button></div>`;
   }
   const cats = lib?.jcrCategories ?? [];
   const hidden = new Set(S.settings.hiddenCategories);
@@ -776,45 +776,21 @@ const JCR_URL = "https://jcr.clarivate.com";
 const SJR_URL = "https://www.scimagojr.com/journalrank.php";
 const anchor = (url, text) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
 
-/// 처음 자료 넣는 법(첫 화면·'자료 넣는 법' 창 같이 씀)
+/// 자료 넣는 법(첫 화면·'자료 넣기' 창 같이 씀) — 짧게: 받아서 끌어다 놓기
 function dataGuideSteps() {
-  const steps = (items) => `<ol class="sub">${items.map((t) => `<li>${t}</li>`).join("")}</ol>`;
-  const step = (n, title, note, body) => `<div class="step"><span class="step-n">${n}</span><div class="step-body"><b>${title}</b>${note ? ` <span class="small muted">${note}</span>` : ""}${body}</div></div>`;
-  return step(1, "JCR — 분야마다 CSV 한 개", "(소속 기관이 JCR 을 구독해야 합니다)", steps([
-    `학교 도서관 홈페이지의 전자자료(데이터베이스) 목록에서 <b>Journal Citation Reports</b> 로 들어갑니다. 학교 안 네트워크면 ${anchor(JCR_URL, "jcr.clarivate.com")} 이 바로 열립니다.`,
-    "오른쪽 위 <b>Sign In</b> 으로 개인 Clarivate 계정에 로그인합니다. 내보내기에 필요합니다(계정이 없으면 무료로 만듭니다).",
-    "<b>Categories</b> 에서 분야를 고르면(예: Mathematics, Applied) 그 분야 저널 목록이 열립니다.",
-    "표 위 <b>Customize</b> 에서 <b>JIF Rank</b> 와 <b>JIF Percentile</b> 을 켭니다. Edition 은 모두 켠 채로 둡니다(SCIE·SSCI·AHCI·ESCI).",
-    "<b>Export → CSV</b> 로 받습니다. 한 번에 600개까지라 큰 분야(예: Economics)는 정렬을 반대로 바꿔 한 번 더 받습니다. 겹치는 줄은 앱이 합칩니다.",
-    "필요한 분야마다 되풀이합니다. 내 저널이 속한 분야만 받으면 충분합니다 — 한꺼번에 많이 받으면 학교 접속이 막힐 수 있습니다.",
-  ])) + step(2, "SCImago — 전체 목록 CSV 한 개", "(무료, 로그인 필요 없음)", steps([
-    `${anchor(SJR_URL, "scimagojr.com → Journal Rankings")} 를 엽니다.`,
-    "분야·지역을 거르지 않은 채 <b>Download data</b> 를 누릅니다.",
-    "받은 파일 이름(예: scimagojr 2025.csv)은 바꾸지 않습니다 — 연도를 이름에서 읽습니다.",
-  ])) + step(3, "받은 CSV 넣기", "", steps([
-    "<b>컴퓨터</b>: 받은 CSV 를 이 창에 끌어다 놓습니다. 여러 개를 한 번에, zip 이나 폴더째 놓아도 됩니다.",
-    "<b>휴대폰·패드</b>: <b>파일 고르기</b> 로 고릅니다. 컴퓨터에서 받아 iCloud Drive·AirDrop·메일로 옮겨 두면 편합니다.",
-    "CSV 를 엑셀로 열었다 저장하지 마세요 — 형식이 바뀌어 못 읽을 수 있습니다.",
-    "다 넣으면 왼쪽 아래에 ‘21개 넣음 · JCR 20 · SCImago 1’ 처럼 나오고 왼쪽에 받은 분야가 생깁니다. 같은 파일을 다시 넣어도 겹치지 않고, 새 해 자료를 넣으면 가장 최근 연도로 봅니다.",
-  ]));
+  return `<ol class="simple">
+    <li>${anchor(JCR_URL, "JCR")}(분야별)과 ${anchor(SJR_URL, "SCImago")}(전체)에서 CSV 를 내려받습니다.</li>
+    <li>받은 파일을 이 창에 끌어다 놓습니다. 휴대폰은 <b>파일 고르기</b>로 넣습니다.</li></ol>`;
 }
 
-/// 알아 둘 것(자료 위치·이용 안내)
 function dataGuideNotes() {
-  return `<ul class="notes">
-    <li>둘 중 하나만 넣어도 됩니다. JCR 만 넣으면 JIF·분위·순위, SCImago 만 넣으면 SJR·분위가 보입니다.</li>
-    <li>넣은 자료는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 다른 기기·브라우저에선 다시 넣어야 합니다.</li>
-    <li>${CALCULATED}</li>
-    <li>${AS_IS}</li></ul>
-    <p class="caution">⚠︎ ${CAUTION}</p>`;
+  return '<p class="caution">⚠︎ JCR 자료는 각자 기관 구독으로 받아 개인 연구용으로만 쓰고, 남에게 나눠 주거나 올리지 마세요.</p>';
 }
 
 function guideHTML() {
-  return `<div class="guide-box"><h2>처음 자료 넣는 법</h2>
-    <p class="muted">이 앱에는 자료가 들어 있지 않습니다. JCR·SCImago 에서 CSV 를 각자 받아 넣으면 바로 읽습니다.</p>
+  return `<div class="guide-box"><h2>자료 넣기</h2>
     ${dataGuideSteps()}
-    <div class="row"><button type="button" class="primary" data-pickfiles>파일 고르기…</button><span class="small muted">또는 이 창에 끌어다 놓기</span></div>
-    <h3 class="notes-title">알아 둘 것</h3>
+    <div class="row"><button type="button" class="primary" data-pickfiles>파일 고르기…</button></div>
     ${dataGuideNotes()}</div>`;
 }
 
@@ -822,10 +798,9 @@ function guideHTML() {
 function openHelp() {
   const d = $("help");
   d.innerHTML = `<form method="dialog" class="settings help">
-    <div class="dlg-head"><h2>자료 넣는 법</h2><button class="icon" value="close" title="닫기">✕</button></div>
+    <div class="dlg-head"><h2>자료 넣기</h2><button class="icon" value="close" title="닫기">✕</button></div>
     ${dataGuideSteps()}
     <div class="row"><button type="button" class="small-btn primary" data-pickfiles>파일 고르기…</button></div>
-    <h3>알아 둘 것</h3>
     ${dataGuideNotes()}
   </form>`;
   d.querySelectorAll("[data-pickfiles]").forEach((b) => (b.onclick = () => { d.close(); $("file-input").click(); }));
@@ -876,7 +851,7 @@ function openSettings(focusAliases = false) {
       <p class="small">${lib?.jcrYear != null ? `JCR ${lib.jcrYear} · 분야 ${lib.jcrCategories.length}개(CSV ${jcrFiles}개)` : "JCR 없음"} · ${lib?.sjrYear != null ? `SCImago ${lib.sjrYear}(CSV ${sjrFiles}개)` : "SCImago 없음"}</p>
       <p class="small muted">자료·설정·즐겨찾기는 이 브라우저 안에만 저장되고 어디로도 보내지 않습니다. 다른 기기·브라우저에선 다시 넣어야 합니다.</p>
       <div class="row"><button type="button" class="small-btn" data-pickfiles>파일 넣기…</button>
-      <button type="button" class="small-btn" id="set-help">자료 넣는 법</button>
+      <button type="button" class="small-btn" id="set-help">자료 넣기</button>
       <button type="button" class="small-btn danger" id="set-clear">자료 모두 지우기</button></div></section>
     <section><h3>이용 안내</h3>
       <p class="small caution">${CAUTION}</p>

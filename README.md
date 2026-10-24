@@ -9,10 +9,7 @@ JCR·SCImago 에서 받은 CSV 로 저널의 JIF·분위·순위·SJR 을 한 �
 
 ## 자료
 
-자료는 들어 있지 않습니다. 각자 받아서 창에 끌어다 놓습니다(zip·폴더째도 됨).
-
-- **JCR** — 소속 기관 구독으로 JCR 에 들어가 Sign In → Categories 에서 분야를 고르고 Customize 에서 JIF Rank·JIF Percentile 을 켠 뒤 Export → CSV
-- **SCImago** — scimagojr.com → Journal Rankings → Download data
+자료는 들어 있지 않습니다. JCR(분야별)과 SCImago(전체)에서 CSV 를 내려받아 창에 끌어다 놓으면 됩니다.
 
 ## 이용 안내
 

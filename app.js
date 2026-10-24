@@ -18,7 +18,7 @@ const CALCULATED = "ESCI 제외 순위·상위 %·SJR 분류 순위는 이 앱�
 const AS_IS = "이 앱은 있는 그대로 제공되며, 값의 정확성이나 그 사용 결과에 책임지지 않습니다.";
 /// JCR 자료 이용 안내(첫 화면·설정)
 const CAUTION = "JCR 자료는 Clarivate 의 저작물입니다. 자기 기관의 구독으로 각자 받아 개인 연구용으로만 쓰고, 받은 CSV 를 남에게 나눠 주거나 인터넷에 올리지 마세요. 내보낸 표(Excel·PDF)에도 JCR 값이 들어 있으니 연구·업무용으로만 쓰세요.";
-const DEFAULTS = { includeESCI: true, includeNonJCR: false, dividers: "1, 5, 25, 50, 75", showDividers: true, hiddenCategories: [], columns: null };
+const DEFAULTS = { includeESCI: true, includeNonJCR: false, dividers: "1, 5, 25, 50, 75", showDividers: true, hiddenCategories: [], columns: null, appearance: "auto" };
 
 /// 표의 열(차례는 사용자가 바꾼다)
 const COLUMNS = {
@@ -103,6 +103,7 @@ async function start() {
     S.favorites = favorites ?? [];
     S.aliases = aliases ?? "";
     S.savedViews = savedViews ?? [];
+    applyTheme();
   } catch (e) {
     storageError = "이 브라우저에 저장할 수 없습니다(개인 정보 보호 창이면 일반 창에서 열어 주세요). " + (e?.message ?? "");
   }
@@ -794,6 +795,31 @@ function guideHTML() {
     ${dataGuideNotes()}</div>`;
 }
 
+// MARK: 화면 밝기(자동·밝게·어둡게)
+
+const darkQuery = matchMedia("(prefers-color-scheme: dark)");
+const isDark = () => (S.settings.appearance === "auto" ? darkQuery.matches : S.settings.appearance === "dark");
+
+/// <html data-theme> 와 첫 그리기용 사본(localStorage), 툴바 단추 모양
+function applyTheme() {
+  const a = S.settings.appearance;
+  if (a === "light" || a === "dark") document.documentElement.dataset.theme = a;
+  else delete document.documentElement.dataset.theme;
+  try {
+    if (a === "light" || a === "dark") localStorage.setItem("jm-theme", a);
+    else localStorage.removeItem("jm-theme");
+  } catch {}
+  for (const id of ["btn-theme", "btn-theme-m"]) {
+    $(id).textContent = isDark() ? "☀︎" : "☾";
+    $(id).title = (isDark() ? "밝게" : "어둡게") + " (설정에서 '자동'으로 되돌림)";
+  }
+}
+
+function setAppearance(a) {
+  setSetting("appearance", a);
+  applyTheme();
+}
+
 // MARK: 홈 화면에 추가(설정 안)
 
 /// 크롬·엣지가 주는 설치 기회를 잡아 두었다가 설정의 '지금 설치' 로
@@ -880,6 +906,9 @@ function openSettings(focusAliases = false) {
       <div class="row"><button type="button" class="small-btn" data-pickfiles>파일 넣기…</button>
       <button type="button" class="small-btn" id="set-help">자료 넣기</button>
       <button type="button" class="small-btn danger" id="set-clear">자료 모두 지우기</button></div></section>
+    <section><h3>화면</h3>
+      <div class="row">${[["auto", "자동(기기 따라)"], ["light", "밝게"], ["dark", "어둡게"]].map(([v, t]) =>
+        `<label class="check-row"><input type="radio" name="set-appearance" value="${v}"${s.appearance === v ? " checked" : ""}> ${t}</label>`).join("")}</div></section>
     <section><h3>홈 화면에 추가</h3>
       ${installHTML()}</section>
     <section><h3>이용 안내</h3>
@@ -919,6 +948,7 @@ function openSettings(focusAliases = false) {
   };
   d.querySelector("[data-pickfiles]").onclick = () => { d.close(); $("file-input").click(); };
   d.querySelector("#set-help").onclick = () => { d.close(); openHelp(); };
+  d.querySelectorAll('input[name="set-appearance"]').forEach((r) => (r.onchange = () => setAppearance(r.value)));
   const install = d.querySelector("#set-install");
   if (install) install.onclick = async () => {
     installPrompt.prompt();
@@ -1139,6 +1169,9 @@ function bindUI() {
   };
   $("btn-settings").onclick = () => openSettings();
   $("btn-help").onclick = () => openHelp();
+  // 툴바 단추: 지금과 반대로(자동이었으면 직접 고른 것이 된다)
+  for (const id of ["btn-theme", "btn-theme-m"]) $(id).onclick = () => setAppearance(isDark() ? "light" : "dark");
+  darkQuery.addEventListener("change", applyTheme);
   $("btn-help-m").onclick = () => openHelp();
   $("btn-settings-m").onclick = () => openSettings();
   $("btn-back").onclick = () => {

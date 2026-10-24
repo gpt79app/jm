@@ -24,8 +24,9 @@
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif;
   font-size: 13px;
 }
+/* 어두운 화면: 기기 설정을 따르거나(자동) 직접 고른 것(설정·툴바 단추, <html data-theme>) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #1e1e21;
     --side: #262629;
     --bar: #242427;
@@ -46,6 +47,28 @@
     --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
   }
 }
+:root[data-theme="dark"] {
+  --bg: #1e1e21;
+  --side: #262629;
+  --bar: #242427;
+  --line: #38383c;
+  --text: #ececef;
+  --muted: #a0a0a7;
+  --faint: #6f6f76;
+  --hover: rgba(255, 255, 255, 0.06);
+  --odd: rgba(255, 255, 255, 0.025);
+  --accent: #5b93f0;
+  --accent-soft: rgba(91, 147, 240, 0.2);
+  --sel: #3a6fd0;
+  --box: #26262a;
+  --q1: #3cc46b;
+  --q2: #5b93f0;
+  --q3: #f0a530;
+  --q4: #f0605d;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }

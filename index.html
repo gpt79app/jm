@@ -22,6 +22,7 @@
     <aside class="sidebar">
       <div class="side-head">
         <span class="brand"><img src="icons/icon-32.png" alt="" width="18" height="18">JournalTier</span>
+        <button type="button" id="btn-help-m" class="icon only-narrow push" title="자료 넣는 법">?</button>
         <button type="button" id="btn-settings-m" class="icon only-narrow" title="설정">⚙︎</button>
       </div>
       <div class="side-search only-narrow">
@@ -45,6 +46,7 @@
           <button type="button" id="btn-export" class="toggle" title="지금 표를 보이는 열·차례 그대로 내보내기(저널을 둘 이상 골랐으면 고른 것만)">내보내기 ▾</button>
           <button type="button" id="btn-pick" class="toggle only-narrow">고르기</button>
           <button type="button" id="btn-detail" class="icon only-wide" title="자세히 보기 열기/닫기">◨</button>
+          <button type="button" id="btn-help" class="icon only-wide" title="자료 넣는 법">?</button>
           <button type="button" id="btn-settings" class="icon only-wide" title="설정">⚙︎</button>
         </div>
         <div id="sortbar" class="sortbar only-narrow"></div>
@@ -68,6 +70,7 @@
   <div id="drop-overlay" class="drop-overlay" hidden><div>CSV·zip·폴더를 놓으면 넣습니다</div></div>
   <dialog id="settings"></dialog>
   <dialog id="name-dialog"></dialog>
+  <dialog id="help"></dialog>
   <input type="file" id="file-input" multiple accept=".csv,.zip,text/csv,application/zip" hidden>
 </body>
 </html>

@@ -92,7 +92,7 @@ button.primary { padding: 7px 16px; border-radius: 8px; border: 0; cursor: point
 
 /* 왼쪽 */
 .sidebar { background: var(--side); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
-.side-head { display: flex; align-items: center; padding: 14px 14px 6px; }
+.side-head { display: flex; align-items: center; gap: 2px; padding: 14px 14px 6px; }
 .brand { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; }
 .brand img { border-radius: 4px; }
 .side-list { flex: 1; overflow: auto; padding: 4px 8px 12px; }
@@ -113,6 +113,8 @@ button.primary { padding: 7px 16px; border-radius: 8px; border: 0; cursor: point
 .side-view:hover .del { visibility: visible; }
 .side-cat.faded .side-item { color: var(--muted); }
 .side-hidden summary { cursor: pointer; list-style: revert; margin-top: 8px; }
+.side-empty { margin: 14px 4px; padding: 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.side-empty p { margin: 0; }
 .side-foot { border-top: 1px solid var(--line); padding: 8px 12px 10px; font-size: 11px; display: flex; flex-direction: column; gap: 5px; background: var(--bar); }
 .foot-row { display: flex; align-items: center; gap: 6px; }
 .notice { color: var(--muted); cursor: pointer; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -144,7 +146,18 @@ button.primary { padding: 7px 16px; border-radius: 8px; border: 0; cursor: point
 .table-empty button, .guide button { margin-top: 6px; }
 .table-empty button:not(.primary) { padding: 5px 12px; border-radius: 7px; border: 1px solid var(--line); background: var(--bg); cursor: pointer; }
 .guide { background: var(--bg); overflow: auto; justify-content: flex-start; padding-top: 8vh; }
-.guide-box { max-width: 560px; text-align: left; display: flex; flex-direction: column; gap: 12px; }
+.guide-box { max-width: 660px; text-align: left; display: flex; flex-direction: column; gap: 12px; }
+.guide-box .row, .help .row { display: flex; align-items: center; gap: 10px; }
+.step-body { min-width: 0; }
+.sub { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
+.sub li { line-height: 1.5; }
+.sub b { color: var(--text); font-weight: 600; }
+.sub a, .notes a { color: var(--accent); }
+.notes-title { margin: 6px 0 0; font-size: 13px; }
+.notes { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+dialog#help { width: min(680px, calc(100vw - 24px)); max-height: calc(100dvh - 40px); overflow: auto; }
+.help { gap: 10px; }
+.help .step { margin-top: 2px; }
 .guide-box h2 { margin: 0; font-size: 20px; }
 .guide-box p { margin: 0; }
 .step { display: flex; gap: 10px; align-items: baseline; }
@@ -269,6 +282,15 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.25); }
 .settings .row.end { justify-content: flex-end; margin-top: 8px; }
 .dlg-head { display: flex; align-items: center; justify-content: space-between; }
 code { font-family: ui-monospace, Menlo, monospace; font-size: 11px; }
+
+/* 중간 폭(노트북 창): 칸을 조금 좁히고 검색 칸은 둘째 줄로 */
+@media (max-width: 1240px) and (min-width: 761px) {
+  .app { grid-template-columns: 220px minmax(0, 1fr) 290px; }
+  .app.no-detail { grid-template-columns: 220px minmax(0, 1fr) 0; }
+  .toolbar { flex-wrap: wrap; row-gap: 6px; }
+  .titles { flex: 1; max-width: none; }
+  .search { order: 5; flex-basis: 100%; max-width: none; margin: 0; }
+}
 
 /* 좁은 화면: 한 칸씩(목록 → 표 → 자세히) */
 @media (max-width: 760px) {

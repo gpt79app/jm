@@ -830,7 +830,7 @@ addEventListener("beforeinstallprompt", (e) => {
 });
 
 function installHTML() {
-  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone || /Electron\//.test(navigator.userAgent)) return '<p class="small muted">지금 앱으로 열려 있습니다.</p>';
+  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone || /Electron\//.test(navigator.userAgent) || location.hostname === "tauri.localhost" || location.protocol === "tauri:") return '<p class="small muted">지금 앱으로 열려 있습니다.</p>';
   const ua = navigator.userAgent;
   const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const android = /Android/.test(ua);

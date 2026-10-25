@@ -4,8 +4,9 @@ import { badge, esc, fmt3 } from "./util.js";
 
 const pct = (c) => (c.percentile == null ? -1 : c.percentile);
 
-/// 저널 하나. 분야를 누르면 data-category, 별은 data-star
-export function detailHTML(j, { jcrYear, sjrYear, droppedESCI, categoryCount }) {
+/// 저널 하나. 분야를 누르면 data-category, 별은 data-star, 태그 메뉴는 data-tagmenu.
+/// droppedNote: 고른 색인 때문에 분야가 다 빠졌을 때의 말, tags: 붙은 태그
+export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, tags = [] }) {
   const sub = [j.abbreviation, j.publisher].filter(Boolean).join(" · ");
   const issn = [j.issn && `ISSN ${j.issn}`, j.eissn && `eISSN ${j.eissn}`].filter(Boolean).join(" · ");
   const search = `https://www.google.com/search?q=${encodeURIComponent(`"${displayTitle(j)}" journal`)}`;
@@ -22,7 +23,7 @@ export function detailHTML(j, { jcrYear, sjrYear, droppedESCI, categoryCount }) 
     jcr = `<div class="big"><span class="muted">JIF</span> <b class="num">${esc(j.jifText)}</b></div>${lines}
       <p class="note">받아 둔 ${categoryCount}개 분야 안에서의 순위입니다.</p>`;
   } else {
-    jcr = `<p class="muted">${droppedESCI ? "ESCI 저널이라 지금(ESCI 제외)은 순위에서 빠져 있습니다." : "받아 둔 JCR 분야에 없는 저널입니다."}</p>`;
+    jcr = `<p class="muted">${esc(droppedNote ?? "받아 둔 JCR 분야에 없는 저널입니다.")}</p>`;
   }
   let sjr;
   if (j.sjrTitle) {
@@ -41,6 +42,8 @@ export function detailHTML(j, { jcrYear, sjrYear, droppedESCI, categoryCount }) 
     ${displayTitle(j) !== j.title ? `<div class="muted small">JCR 표기: ${esc(j.title)}</div>` : ""}
     ${sub ? `<div class="muted">${esc(sub)}</div>` : ""}
     ${issn ? `<div class="muted small">${esc(issn)}</div>` : ""}
+    <div class="tag-chips">${tags.map((t) => `<span class="tag-chip"><span class="tag-dot tc-${esc(t.color)}"></span>${esc(t.name)}</span>`).join("")}
+      <button type="button" class="small-btn" data-tagmenu="${esc(j.id)}" title="태그 붙이기·떼기">태그 ▾</button></div>
     <div class="links"><a href="${esc(search)}" target="_blank" rel="noopener noreferrer" title="웹 검색으로 엽니다">웹에서 찾기</a>
       ${j.sjrID ? `<a href="https://www.scimagojr.com/journalsearch.php?q=${encodeURIComponent(j.sjrID)}&amp;tip=sid" target="_blank" rel="noopener noreferrer">SCImago</a>` : ""}</div>
     <section class="box"><h3>JCR ${esc(jcrYear)}</h3>${jcr}</section>
@@ -73,7 +76,7 @@ export function compareHTML(journals, colors, { jcrYear, sjrYear }) {
   const sjr = journals.map((j, i) => `<div class="cmp-line">${dot(j, i)}${badge(j.sjrQuartile)}<span class="num">${j.sjr == null ? "—" : fmt3(j.sjr)}</span>
       ${j.hIndex != null ? `<span class="push muted">H ${j.hIndex}</span>` : ""}</div>`).join("");
   return `<div class="detail compare">
-    <div class="detail-title"><h2>비교 ${journals.length}개</h2><button type="button" class="small-btn" data-order>순서 ▾</button></div>
+    <div class="detail-title"><h2>비교 ${journals.length}개</h2><button type="button" class="small-btn" data-tagmenu title="고른 저널 모두에 태그 붙이기·떼기">태그 ▾</button><button type="button" class="small-btn" data-order>순서 ▾</button></div>
     <div class="cmp-names">${names}</div>
     <section class="box"><h3>JIF (JCR ${esc(jcrYear)})</h3>${bars}</section>
     ${cats}

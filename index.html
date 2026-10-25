@@ -44,7 +44,7 @@
         </label>
         <div class="tools">
           <button type="button" id="btn-nonjcr" class="toggle">SCImago 포함</button>
-          <button type="button" id="btn-esci" class="toggle">ESCI 포함</button>
+          <button type="button" id="btn-edition" class="toggle" title="보일 색인 고르기 — SCIE·SSCI 를 빼면 그 분야는 목록과 '가장 좋은 분야'에서 빠지고, ESCI 를 빼면 남은 저널끼리 순위를 다시 계산">색인 ▾</button>
           <button type="button" id="btn-export" class="toggle" title="지금 표를 보이는 열·차례 그대로 내보내기(저널을 둘 이상 골랐으면 고른 것만)">내보내기 ▾</button>
           <button type="button" id="btn-pick" class="toggle only-narrow">고르기</button>
           <button type="button" id="btn-detail" class="icon only-wide" title="자세히 보기 열기/닫기">◨</button>
@@ -59,7 +59,7 @@
         <div id="table"></div>
         <div id="table-empty" class="table-empty" hidden></div>
         <div id="guide" class="guide" hidden></div>
-        <button type="button" id="btn-compare" class="fab" hidden>비교</button>
+        <div class="fabs"><button type="button" id="btn-tagsel" class="fab" hidden>태그</button><button type="button" id="btn-compare" class="fab" hidden>비교</button></div>
       </div>
     </main>
 
@@ -73,6 +73,7 @@
   <div id="drop-overlay" class="drop-overlay" hidden><div>CSV·zip·폴더를 놓으면 넣습니다</div></div>
   <dialog id="settings"></dialog>
   <dialog id="name-dialog"></dialog>
+  <dialog id="tag-dialog"></dialog>
   <dialog id="help"></dialog>
   <input type="file" id="file-input" multiple accept=".csv,.zip,text/csv,application/zip" hidden>
 </body>

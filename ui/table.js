@@ -3,7 +3,7 @@
 import { esc } from "./util.js";
 
 export class VirtualTable {
-  /// opts: { cell(col, row) → html, card(row) → html, divider(row) → html,
+  /// opts: { cell(col, row) → html, card(row) → html, divider(row) → html, rowClass(row) → " 붙일 class"(없어도 됨),
   ///         onSelect(id, event), onStar(id), onContext(id, event), onSort(col), onColumns(columns), onHeaderContext(event) }
   constructor(el, opts) {
     this.el = el;
@@ -124,7 +124,7 @@ export class VirtualTable {
         html += `<div class="vt-row vt-divider" style="top:${top}px;height:${h}px">${this.opts.divider(r)}</div>`;
         continue;
       }
-      const cls = `vt-row${i % 2 ? " odd" : ""}${this.selection.has(r.id) ? " selected" : ""}`;
+      const cls = `vt-row${i % 2 ? " odd" : ""}${this.selection.has(r.id) ? " selected" : ""}${this.opts.rowClass?.(r) ?? ""}`;
       if (this.cards) {
         html += `<div class="${cls}" data-id="${esc(r.id)}" style="top:${top}px;height:${h}px" role="row">${this.opts.card(r)}</div>`;
       } else {

@@ -13,11 +13,11 @@ export const fmt3 = (v) => (v == null ? "" : v.toFixed(3));
 
 export const narrow = () => window.matchMedia("(max-width: 760px)").matches;
 
-/// 작은 메뉴(오른쪽 클릭·단추). items: [{ label, action, checked, disabled } | "-"]
+/// 작은 메뉴(오른쪽 클릭·단추). items: [{ label, action, checked, disabled, color(태그 점) } | { header } | "-"]
 export function showMenu(x, y, items) {
   const menu = document.getElementById("menu");
-  menu.innerHTML = items.map((it, i) => (it === "-" ? '<div class="menu-sep"></div>'
-    : `<button type="button" data-i="${i}"${it.disabled ? " disabled" : ""}>${it.checked != null ? `<span class="check">${it.checked ? "✓" : ""}</span>` : ""}${esc(it.label)}</button>`)).join("");
+  menu.innerHTML = items.map((it, i) => (it === "-" ? '<div class="menu-sep"></div>' : it.header != null ? `<div class="menu-head">${esc(it.header)}</div>`
+    : `<button type="button" data-i="${i}"${it.disabled ? " disabled" : ""}>${it.checked != null ? `<span class="check">${it.checked ? "✓" : ""}</span>` : ""}${it.color ? `<span class="tag-dot tc-${esc(it.color)}"></span>` : ""}${esc(it.label)}</button>`)).join("");
   menu.hidden = false;
   const r = menu.getBoundingClientRect();
   menu.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) + "px";

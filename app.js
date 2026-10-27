@@ -3,7 +3,7 @@ import { loadTables, link, importFile, importSummary } from "./core/loader.js";
 import { best, categoryLines, displayCategory, displayTitle, editions, inJCR, otherCategories, rankIn, rankText, shortNumber, topOf, topText } from "./core/model.js";
 import { categoryEditions, editionNote, effectiveHidden, hidingEditions, mainEditions, reranked, settingEdition } from "./core/ranking.js";
 import * as tagOps from "./core/tags.js";
-import { TAG_COLORS, TAG_COLOR_NAMES, allHave, dims, tagByID, tagStoreFrom, tagsOf } from "./core/tags.js";
+import { TAG_COLORS, TAG_COLOR_NAMES, allHave, dims, isHidden, tagByID, tagStoreFrom, tagsOf } from "./core/tags.js";
 import { START_DEFAULT, prunedTokens, resolveToken, shortcutIndex, shortcutKey, tokenFor } from "./core/views.js";
 import { SearchIndex, searchQuery, orderedSearchHits } from "./core/search.js";
 import { SubcategoryRanks } from "./core/subcategories.js";
@@ -21,7 +21,7 @@ const CALCULATED = "ESCI 제외 순위·상위 %·SJR 분류 순위는 이 앱�
 const AS_IS = "이 앱은 있는 그대로 제공되며, 값의 정확성이나 그 사용 결과에 책임지지 않습니다.";
 /// JCR 자료 이용 안내(첫 화면·설정)
 const CAUTION = "JCR 자료는 Clarivate 의 저작물입니다. 자기 기관의 구독으로 각자 받아 개인 연구용으로만 쓰고, 받은 CSV 를 남에게 나눠 주거나 인터넷에 올리지 마세요. 내보낸 표(Excel·PDF)에도 JCR 값이 들어 있으니 연구·업무용으로만 쓰세요.";
-const DEFAULTS = { includeESCI: true, hiddenEditions: [], includeNonJCR: false, dividers: "1, 5, 25, 50, 75", showDividers: true, hiddenCategories: [], columns: null, appearance: "auto", startView: START_DEFAULT, shortcuts: ["", "", ""] };
+const DEFAULTS = { includeESCI: true, hiddenEditions: [], includeNonJCR: false, dividers: "1, 5, 25, 50, 75", showDividers: true, hiddenCategories: [], columns: null, appearance: "auto", startView: START_DEFAULT, shortcuts: ["", "", ""], hiddenTags: [] };
 
 /// 표의 열(차례는 사용자가 바꾼다)
 const COLUMNS = {
@@ -268,9 +268,13 @@ function dividerThresholds() {
 function makeRows() {
   const { journals, scope, sub } = S;
   const nonJCR = S.settings.includeNonJCR;
+  const q = S.query ? searchQuery(S.query) : null;
+  // 숨긴 태그: 그 태그 목록·검색 중엔 그대로 보인다
+  const hiding = !q && scope.kind !== "tag";
   const candidates = [];
   journals.forEach((j, i) => {
     if (!nonJCR && !inJCR(j)) return;
+    if (hiding && isHidden(S.tags, j.id, S.settings.hiddenTags)) return;
     if (scope.kind === "mine") {
       if (j.isFavorite) candidates.push(i);
     } else if (scope.kind === "jcr") {
@@ -293,7 +297,6 @@ function makeRows() {
       tags: tagsOf(S.tags, j.id),
     };
   };
-  const q = S.query ? searchQuery(S.query) : null;
   if (S.index && q) {
     const rows = orderedSearchHits(S.index.search(q, candidates), journals).map((h) => row(h.index));
     return S.byRelevance ? rows : rows.sort(comparator(S.sort));
@@ -541,6 +544,9 @@ function rowMenu(id, e) {
 function changeTags(change) {
   change(S.tags);
   store.setValue("tags", S.tags);
+  // 지운 태그는 숨김에서도 뺀다
+  const kept = S.settings.hiddenTags.filter((id) => tagByID(S.tags, id));
+  if (kept.length !== S.settings.hiddenTags.length) setSetting("hiddenTags", kept);
   pruneTokens();
   if (S.scope.kind === "tag" && !tagByID(S.tags, S.scope.name)) return setScope({ kind: "jcr" });
   updateRows({ sameList: S.scope.kind !== "tag" });
@@ -566,7 +572,13 @@ function tagMenu(button, ids = new Set([...S.selection].filter((x) => !x.startsW
 function tagOptions(id, x, y) {
   const t = tagByID(S.tags, id);
   if (!t) return;
+  const hidden = S.settings.hiddenTags.includes(id);
   showMenu(x, y, [
+    { label: "이 태그 저널 숨기기", checked: hidden, action: () => {
+      setSetting("hiddenTags", hidden ? S.settings.hiddenTags.filter((x) => x !== id) : [...S.settings.hiddenTags, id]);
+      updateRows();
+    } },
+    "-",
     { label: "이름·색 바꾸기…", action: () => editTag(t) },
     { label: "위로", disabled: S.tags.tags[0] === t, action: () => changeTags((st) => tagOps.moveTag(st, id, -1)) },
     { label: "아래로", disabled: S.tags.tags.at(-1) === t, action: () => changeTags((st) => tagOps.moveTag(st, id, 1)) },
@@ -686,6 +698,13 @@ function setQuery(value) {
   updateRows({ debounce: true });
 }
 
+/// 제목 아래·내보내기에 붙이는 말: 지금 표에서 숨긴 태그가 있을 때만('비추천 숨김')
+function tagNote() {
+  if (S.scope.kind === "tag" || (S.query && searchQuery(S.query))) return "";
+  const names = S.tags.tags.filter((t) => S.settings.hiddenTags.includes(t.id)).map((t) => t.name);
+  return names.length ? names.join("·") + " 숨김" : "";
+}
+
 function scopeTitle() {
   if (S.scope.kind === "mine") return "즐겨찾기";
   if (S.scope.kind === "jcr") return S.settings.includeNonJCR ? "전체 저널(SCImago 포함)" : "JCR 저널";
@@ -796,6 +815,7 @@ function exportTable(pdf) {
   const parts = [`${rows.filter((r) => r.divider == null).length}개` + (picked.length > 1 ? "(고른 것)" : "")];
   if (subs.length) parts.push("SCImago 세부 분류: " + subs.join(", "));
   if (S.query) parts.push(`검색 '${S.query}'`);
+  if (tagNote()) parts.push(tagNote());
   parts.push(yearsText() + (edNote() ? " · " + edNote() : ""));
   parts.push(today());
   $("print").innerHTML = printHTML(title, parts.join(" · "), columns, rows);
@@ -842,8 +862,8 @@ function renderSidebar() {
   // 태그: 누르면 그 태그가 붙은 저널, ⋯·오른쪽 클릭으로 고치기
   if (lib?.journals.length) {
     html += '<div class="side-section"><div class="side-label">태그</div>' + S.tags.tags.map((t) =>
-      `<div class="side-view">${item({ kind: "tag", name: t.id }, t.name, tagCount(t.id), `<span class="ico"><span class="tag-dot tc-${t.color}"></span></span>`)}
-        <button type="button" class="icon del" data-tagopts="${esc(t.id)}" title="이름·색 바꾸기·차례·지우기">⋯</button></div>`).join("")
+      `<div class="side-view">${item({ kind: "tag", name: t.id }, t.name + (S.settings.hiddenTags.includes(t.id) ? " (숨김)" : ""), tagCount(t.id), `<span class="ico"><span class="tag-dot tc-${t.color}"></span></span>`)}
+        <button type="button" class="icon del" data-tagopts="${esc(t.id)}" title="숨기기·이름·색 바꾸기·차례·지우기">⋯</button></div>`).join("")
       + '<button type="button" class="side-item faint" data-newtag><span class="ico">＋</span><span>새 태그…</span></button></div>';
   }
   if (S.savedViews.length) {
@@ -897,7 +917,7 @@ function renderToolbar() {
   const hq = hangulToQWERTY(S.query);
   $("title").textContent = scopeTitle();
   $("subtitle").textContent = S.library?.journals.length
-    ? `${count}개` + (edNote() ? " · " + edNote() : "") + (hq ? ` · ‘${hq.toLowerCase()}’ 로 찾음` : "") : "";
+    ? `${count}개` + (edNote() ? " · " + edNote() : "") + (tagNote() ? " · " + tagNote() : "") + (hq ? ` · ‘${hq.toLowerCase()}’ 로 찾음` : "") : "";
   const nonJCR = $("btn-nonjcr"), edition = $("btn-edition");
   nonJCR.classList.toggle("on", S.settings.includeNonJCR);
   nonJCR.title = S.settings.includeNonJCR ? "받아 둔 JCR 분야에 없는(SCImago 에만 있는) 저널도 보이는 중. 누르면 JCR 저널만"

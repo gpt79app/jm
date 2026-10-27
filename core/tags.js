@@ -29,6 +29,13 @@ export function tagsOf(store, journalID) {
   return ids?.length ? store.tags.filter((t) => ids.includes(t.id)) : [];
 }
 
+/// 숨긴 태그(설정 hiddenTags, 10-27) 중 하나라도 붙은 저널 — 분야·JCR 저널·즐겨찾기 목록에서 뺀다.
+/// 그 태그 목록과 검색에는 그대로 보인다(부르는 쪽에서 판단)
+export function isHidden(store, journalID, hiddenTags) {
+  const ids = store.journals[journalID];
+  return !!(hiddenTags?.length && ids?.some((id) => hiddenTags.includes(id)));
+}
+
 /// 고른 저널이 모두 이 태그를 가졌는지(메뉴의 체크 표시·붙이기/떼기 판단)
 export function allHave(store, tagID, ids) {
   const list = [...ids];

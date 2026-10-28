@@ -62,7 +62,7 @@ export function parseSCImago(text) {
   // 한 해 편수 'Total Docs. (2025)' — 해는 파일마다 다르다
   const cDocs = header.findIndex((s) => /^Total Docs\. \(\d{4}\)$/.test(s));
   const docsYear = cDocs >= 0 ? num(firstMatch(header[cDocs], /\((\d{4})\)/) ?? "") : null;
-  const cDocs3 = col("Total Docs. (3years)"), cCov = col("Coverage");
+  const cDocs3 = col("Total Docs. (3years)"), cCov = col("Coverage"), cCountry = col("Country");
   const out = [];
   for (const r of rows.slice(1)) {
     if (r.length <= 3) continue;
@@ -78,6 +78,7 @@ export function parseSCImago(text) {
       id: v(cID),
       docs: int(v(cDocs)), docsYear, docs3y: int(v(cDocs3)),
       coverage: v(cCov).trim(),
+      country: v(cCountry).trim(),
       categories: v(cCat).split("; ").map((item) => item.trim()).filter(Boolean).map((t) => {
         const q = firstMatch(t, /\((Q[1-4])\)$/);
         return q ? { name: t.replace(` (${q})`, ""), quartile: q } : { name: t, quartile: "" };
@@ -183,6 +184,7 @@ export function loadTables(files) {
         Object.assign(j, {
           sjrTitle: row.title, sjr: row.sjr, sjrQuartile: row.quartile, hIndex: row.hIndex, sjrCategories: row.categories,
           sjrID: row.id, sjrDocs: row.docs, sjrDocsYear: row.docsYear, sjrDocs3y: row.docs3y, coverage: row.coverage,
+          country: row.country, sjrPublisher: row.publisher,
         });
         for (const s of row.issns) if (!idByISSN.has(s)) idByISSN.set(s, id);
       }

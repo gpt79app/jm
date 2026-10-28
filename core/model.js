@@ -2,7 +2,7 @@
 //
 // 저널: { id, title, abbreviation, publisher, issn, eissn, jif, jifText, categories: [분야 순위],
 //         sjrTitle, sjr, sjrQuartile, hIndex, sjrCategories: [{ name, quartile }], sjrID,
-//         sjrDocs, sjrDocsYear, sjrDocs3y, coverage, isFavorite, aliases }
+//         sjrDocs, sjrDocsYear, sjrDocs3y, coverage, country(SCImago 발행 국가), sjrPublisher(SCImago 표기), isFavorite, aliases }
 // 분야 순위: { name(대문자 그대로), edition, rank, total, quartile, percentile }
 
 export function newJournal(id, title) {
@@ -10,7 +10,7 @@ export function newJournal(id, title) {
     id, title, abbreviation: "", publisher: "", issn: "", eissn: "",
     jif: null, jifText: "", categories: [],
     sjrTitle: "", sjr: null, sjrQuartile: "", hIndex: null, sjrCategories: [], sjrID: "",
-    sjrDocs: null, sjrDocsYear: null, sjrDocs3y: null, coverage: "",
+    sjrDocs: null, sjrDocsYear: null, sjrDocs3y: null, coverage: "", country: "", sjrPublisher: "",
     isFavorite: false, aliases: [],
   };
 }

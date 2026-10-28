@@ -1150,8 +1150,11 @@ function openSettings(focusAliases = false) {
     <section><h3>화면</h3>
       <div class="row">${[["auto", "자동(기기 따라)"], ["light", "밝게"], ["dark", "어둡게"]].map(([v, t]) =>
         `<label class="check-row"><input type="radio" name="set-appearance" value="${v}"${s.appearance === v ? " checked" : ""}> ${t}</label>`).join("")}</div></section>
-    <section><h3>홈 화면에 추가</h3>
-      ${installHTML()}</section>
+    ${inTauri ? `<section><h3>업데이트</h3>
+      <p class="small muted">켤 때 저절로 확인하고, 새 버전이 있으면 설치할지 묻습니다.</p>
+      <div class="row"><button type="button" class="small-btn" id="set-update">업데이트 확인</button></div></section>`
+    : `<section><h3>홈 화면에 추가</h3>
+      ${installHTML()}</section>`}
     <section><h3>이용 안내</h3>
       <p class="small caution">${CAUTION}</p>
       <p class="small muted">${CALCULATED}</p>
@@ -1188,6 +1191,15 @@ function openSettings(focusAliases = false) {
   for (const b of editionBoxes) b.onchange = () => {
     setEdition(b.dataset.setedition, b.checked);
     syncEditions();
+  };
+  // Windows 앱(Tauri): 지금 새 버전 확인 — 결과(설치할지·최신·실패)는 앱이 창으로 알린다
+  const upd = d.querySelector("#set-update");
+  if (upd) upd.onclick = async () => {
+    upd.disabled = true;
+    upd.textContent = "확인 중…";
+    try { await window.__TAURI_INTERNALS__.invoke("check_update_now"); } catch { flash("업데이트를 확인하지 못했습니다", ""); }
+    upd.disabled = false;
+    upd.textContent = "업데이트 확인";
   };
   d.querySelector("#set-start").onchange = (e) => setSetting("startView", e.target.value);
   d.querySelectorAll("[data-shortcut]").forEach((sel) => (sel.onchange = () => {
@@ -1317,6 +1329,8 @@ function bindUI() {
     } else if (d.back != null) {
       S.pane = S.pane === "detail" ? "table" : "lists";
       render();
+    } else if (d.copy) {
+      copyText(d.copy);
     } else if (d.category) {
       showCategory(d.category, S.selection.size === 1 ? [...S.selection][0] : null);
     } else if (d.star) {

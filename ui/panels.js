@@ -7,8 +7,13 @@ const pct = (c) => (c.percentile == null ? -1 : c.percentile);
 /// 저널 하나. 분야를 누르면 data-category, 별은 data-star, 태그 메뉴는 data-tagmenu.
 /// droppedNote: 고른 색인 때문에 분야가 다 빠졌을 때의 말, tags: 붙은 태그
 export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, tags = [] }) {
-  const sub = [j.abbreviation, j.publisher].filter(Boolean).join(" · ");
-  const issn = [j.issn && `ISSN ${j.issn}`, j.eissn && `eISSN ${j.eissn}`].filter(Boolean).join(" · ");
+  // 서식에 옮겨 적기 쉽게 크게, 누르면 복사(10-28 사용자). 출판사는 SCImago 표기가 있으면 그쪽(JCR 은 대문자 줄임)
+  const publisher = j.sjrPublisher || j.publisher;
+  const pubNote = j.publisher && j.publisher.toLowerCase() !== publisher.toLowerCase() ? `JCR 표기: ${j.publisher}` : "";
+  const info = [["출판사", publisher, pubNote], ["발행 국가", j.country], ["ISSN", j.issn], ["eISSN", j.eissn]].map(([label, value, note]) =>
+    `<div class="info-label muted">${label}</div><div>${value
+      ? `<button type="button" class="info-value" data-copy="${esc(value)}" title="눌러서 ${label} 복사">${esc(value)} <span class="info-copy">⧉</span></button>`
+      : '<span class="info-value faint">—</span>'}${note ? `<div class="muted small">${esc(note)}</div>` : ""}</div>`).join("");
   const search = `https://www.google.com/search?q=${encodeURIComponent(`"${displayTitle(j)}" journal`)}`;
   const top = best(j);
   let jcr;
@@ -40,12 +45,12 @@ export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, ta
     <div class="detail-title"><h2>${esc(displayTitle(j))}</h2>
       <button type="button" class="star-big${j.isFavorite ? " on" : ""}" data-star="${esc(j.id)}" title="${j.isFavorite ? "즐겨찾기에서 빼기" : "즐겨찾기에 넣기"}">${j.isFavorite ? "★" : "☆"}</button></div>
     ${displayTitle(j) !== j.title ? `<div class="muted small">JCR 표기: ${esc(j.title)}</div>` : ""}
-    ${sub ? `<div class="muted">${esc(sub)}</div>` : ""}
-    ${issn ? `<div class="muted small">${esc(issn)}</div>` : ""}
+    ${j.abbreviation ? `<div class="muted">${esc(j.abbreviation)}</div>` : ""}
     <div class="tag-chips">${tags.map((t) => `<span class="tag-chip"><span class="tag-dot tc-${esc(t.color)}"></span>${esc(t.name)}</span>`).join("")}
       <button type="button" class="small-btn" data-tagmenu="${esc(j.id)}" title="태그 붙이기·떼기">태그 ▾</button></div>
     <div class="links"><a href="${esc(search)}" target="_blank" rel="noopener noreferrer" title="웹 검색으로 엽니다">웹에서 찾기</a>
       ${j.sjrID ? `<a href="https://www.scimagojr.com/journalsearch.php?q=${encodeURIComponent(j.sjrID)}&amp;tip=sid" target="_blank" rel="noopener noreferrer">SCImago</a>` : ""}</div>
+    <section class="box"><h3>저널 정보</h3><div class="info-grid">${info}</div></section>
     <section class="box"><h3>JCR ${esc(jcrYear)}</h3>${jcr}</section>
     <section class="box"><h3>SCImago ${esc(sjrYear)}</h3>${sjr}</section>
   </div>`;

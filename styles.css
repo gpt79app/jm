@@ -285,6 +285,7 @@ dialog#help { width: min(520px, calc(100vw - 24px)); max-height: calc(100dvh - 4
 button.info-value { cursor: pointer; }
 button.info-value:hover { background: var(--hover); }
 .info-copy { font-size: 11px; color: var(--faint); }
+.detail-title .info-value { font: inherit; }
 .big { display: flex; align-items: baseline; gap: 8px; }
 .big b { font-size: 20px; }
 .cat-line { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; text-align: left; border: 0; background: none; padding: 4px 4px; border-radius: 6px; cursor: pointer; }

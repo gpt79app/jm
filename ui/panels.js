@@ -42,7 +42,7 @@ export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, ta
     sjr = '<p class="muted">SCImago 에 없는 저널입니다.</p>';
   }
   return `<div class="detail">
-    <div class="detail-title"><h2>${esc(displayTitle(j))}</h2>
+    <div class="detail-title"><h2><button type="button" class="info-value" data-copy="${esc(displayTitle(j))}" title="눌러서 저널 이름 복사">${esc(displayTitle(j))} <span class="info-copy">⧉</span></button></h2>
       <button type="button" class="star-big${j.isFavorite ? " on" : ""}" data-star="${esc(j.id)}" title="${j.isFavorite ? "즐겨찾기에서 빼기" : "즐겨찾기에 넣기"}">${j.isFavorite ? "★" : "☆"}</button></div>
     ${displayTitle(j) !== j.title ? `<div class="muted small">JCR 표기: ${esc(j.title)}</div>` : ""}
     ${j.abbreviation ? `<div class="muted">${esc(j.abbreviation)}</div>` : ""}

@@ -5,8 +5,8 @@ import { badge, esc, fmt3 } from "./util.js";
 const pct = (c) => (c.percentile == null ? -1 : c.percentile);
 
 /// 저널 하나. 분야를 누르면 data-category, 별은 data-star, 태그 메뉴는 data-tagmenu.
-/// droppedNote: 고른 색인 때문에 분야가 다 빠졌을 때의 말, tags: 붙은 태그
-export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, tags = [] }) {
+/// droppedNote: 고른 색인 때문에 분야가 다 빠졌을 때의 말, tags: 붙은 태그, homepage: 저널 홈페이지(모르면 웹 검색)
+export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, tags = [], homepage }) {
   // 서식에 옮겨 적기 쉽게 크게, 누르면 복사(10-28 사용자). 출판사는 SCImago 표기가 있으면 그쪽(JCR 은 대문자 줄임)
   const publisher = j.sjrPublisher || j.publisher;
   const pubNote = j.publisher && j.publisher.toLowerCase() !== publisher.toLowerCase() ? `JCR 표기: ${j.publisher}` : "";
@@ -48,7 +48,9 @@ export function detailHTML(j, { jcrYear, sjrYear, droppedNote, categoryCount, ta
     ${j.abbreviation ? `<div class="muted">${esc(j.abbreviation)}</div>` : ""}
     <div class="tag-chips">${tags.map((t) => `<span class="tag-chip"><span class="tag-dot tc-${esc(t.color)}"></span>${esc(t.name)}</span>`).join("")}
       <button type="button" class="small-btn" data-tagmenu="${esc(j.id)}" title="태그 붙이기·떼기">태그 ▾</button></div>
-    <div class="links"><a href="${esc(search)}" target="_blank" rel="noopener noreferrer" title="웹 검색으로 엽니다">웹에서 찾기</a>
+    <div class="links">${homepage
+      ? `<a href="${esc(homepage)}" target="_blank" rel="noopener noreferrer" title="${esc(homepage)}">저널 홈페이지</a>`
+      : `<a href="${esc(search)}" target="_blank" rel="noopener noreferrer" title="홈페이지 주소를 모르는 저널이라 웹 검색으로 엽니다">웹에서 찾기</a>`}
       ${j.sjrID ? `<a href="https://www.scimagojr.com/journalsearch.php?q=${encodeURIComponent(j.sjrID)}&amp;tip=sid" target="_blank" rel="noopener noreferrer">SCImago</a>` : ""}</div>
     <section class="box"><h3>저널 정보</h3><div class="info-grid">${info}</div></section>
     <section class="box"><h3>JCR ${esc(jcrYear)}</h3>${jcr}</section>

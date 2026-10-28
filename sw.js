@@ -1,6 +1,6 @@
 // 한 번 열면 인터넷 없이도 열리게 앱 파일을 둔다. 자료(CSV)는 여기가 아니라 IndexedDB 에 있다.
 // 파일을 바꾸면 VERSION 을 올린다(새 판을 받아 두고, 다음에 열 때 바뀐다)
-const VERSION = "jm-14";
+const VERSION = "jm-15";
 const FILES = [
   "./", "index.html", "styles.css", "app.js", "storage.js", "manifest.webmanifest",
   "core/csv.js", "core/hangul.js", "core/loader.js", "core/model.js", "core/ranking.js", "core/search.js",

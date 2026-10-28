@@ -75,6 +75,7 @@ const S = {
   editCategories: false,
   showHidden: false,
   pendingScroll: null,
+  homepages: null, // ISSN → 저널 홈페이지(homepages.json)
 };
 
 const $ = (id) => document.getElementById(id);
@@ -100,6 +101,8 @@ async function start() {
   });
   bindUI();
   render();
+  // 저널 홈페이지 목록은 커서(2MB 남짓) 기다리지 않고, 받으면 자세히만 다시 그린다
+  fetch("homepages.json").then((r) => (r.ok ? r.json() : null)).then((m) => { if (m) { S.homepages = m; renderInspector(); } }).catch(() => {});
   try {
     const [files, settings, favorites, aliases, savedViews, tags] = await Promise.all([
       store.readFiles(), store.getValue("settings"), store.getValue("favorites"), store.getValue("aliases"), store.getValue("savedViews"), store.getValue("tags")]);
@@ -1105,7 +1108,8 @@ function renderInspector() {
     const dropped = !inJCR(j) && inJCR(S.library.journals[i]);
     const droppedNote = !dropped ? null : S.settings.includeESCI || editions(S.library.journals[i]) !== "ESCI"
       ? `지금 고른 색인(${edNote()})에는 이 저널의 분야가 없습니다.` : "ESCI 저널이라 지금(ESCI 제외)은 순위에서 빠져 있습니다.";
-    el.innerHTML = back + detailHTML(j, { ...years, droppedNote, categoryCount: S.library.jcrCategories.length, tags: tagsOf(S.tags, j.id) });
+    el.innerHTML = back + detailHTML(j, { ...years, droppedNote, categoryCount: S.library.jcrCategories.length, tags: tagsOf(S.tags, j.id),
+      homepage: S.homepages?.[j.issn] ?? S.homepages?.[j.eissn] });
   } else if (chosen.length > 1) {
     const byID = new Map(chosen.map((j) => [j.id, j]));
     el.innerHTML = back + compareHTML(S.compareOrder.map((id) => byID.get(id)).filter(Boolean), S.compareColors, { jcrYear: S.library?.jcrYear ?? "", sjrYear: S.library?.sjrYear ?? "" });
